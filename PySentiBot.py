@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+
 
 
 # Dependencies
@@ -18,7 +18,7 @@ import time
 plt.style.use('seaborn')
 
 
-# In[ ]:
+
 
 
 # Import and Initialize Sentiment Analyzer
@@ -32,7 +32,7 @@ access_token = os.getenv("bot_access_token")
 access_token_secret = os.getenv("bot_access_token_secret")
 
 
-# In[ ]:
+
 
 
 # Setup Tweepy API Authentication
@@ -41,7 +41,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 
-# In[ ]:
+
 
 
 def parse_requests(tweet, tweet_dict=dict()):
@@ -58,7 +58,7 @@ def parse_requests(tweet, tweet_dict=dict()):
     return tweet_dict
 
 
-# In[ ]:
+
 
 
 def analyze_sentiments(recent_tweets, sentiment_results=list()):
@@ -70,7 +70,7 @@ def analyze_sentiments(recent_tweets, sentiment_results=list()):
     return sentiment_results
 
 
-# In[ ]:
+
 
 
 def remove_noise(tweet, category, key, result_tweet=dict()):
@@ -95,7 +95,7 @@ def cleanse_tweet(tweet,result_tweet=dict()):
     return result_tweet
 
 
-# In[ ]:
+
 
 
 def color_map(value):
@@ -119,7 +119,7 @@ def plot_sentiments(title,sentiments):
     return filename  
 
 
-# In[ ]:
+
 
 
 def scan_for_requests(since_tweet_id):
@@ -157,7 +157,7 @@ def scan_for_requests(since_tweet_id):
         return since_tweet_id
 
 
-# In[ ]:
+
 
 
 since_tweet_id = 933930057860599809
