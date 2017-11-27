@@ -15,7 +15,7 @@ import os
 
 import time
 
-plt.style.use('seaborn-white')
+print (plt.style.available) 
 
 # Import and Initialize Sentiment Analyzer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -35,7 +35,6 @@ access_token_secret = os.getenv("bot_access_token_secret")
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
-
 
 
 
@@ -139,7 +138,7 @@ def scan_for_requests(since_tweet_id):
 
                 if(len(recent_tweets) > 0):
                     sentiments = analyze_sentiments(recent_tweets)
-                    print(sentiments)
+                    #print(sentiments)
                     sentiment_fig = plot_sentiments(analyze_request,sentiments)
                     text_status = f"TRY:11_23:11_30 Thank you for your tweet @{item['user']}! Here is the sentiment analysis of {analyze_request}!"
                     api.update_with_media(filename=sentiment_fig,status=text_status,in_reply_to_status_id=item["id"])
