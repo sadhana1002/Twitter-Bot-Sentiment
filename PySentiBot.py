@@ -17,6 +17,8 @@ import time
 
 print (plt.style.available) 
 
+plt.style.use('fivethirtyeight')
+
 # Import and Initialize Sentiment Analyzer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 analyzer = SentimentIntensityAnalyzer()
