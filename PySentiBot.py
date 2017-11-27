@@ -15,8 +15,6 @@ import os
 
 import time
 
-plt.style.use('seaborn')
-
 
 
 
