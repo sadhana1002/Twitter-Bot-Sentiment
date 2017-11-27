@@ -15,9 +15,7 @@ import os
 
 import time
 
-
-
-
+plt.style.use('seaborn-white')
 
 # Import and Initialize Sentiment Analyzer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
