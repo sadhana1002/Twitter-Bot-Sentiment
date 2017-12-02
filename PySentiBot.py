@@ -150,6 +150,7 @@ def scan_for_requests(since_tweet_id):
                     api.update_status(text_status)
 
                 plt.show()
+                time.sleep(500)
         return results["statuses"][0]["id"]
     else:
         return since_tweet_id
@@ -158,7 +159,7 @@ def scan_for_requests(since_tweet_id):
 
 
 
-since_tweet_id = 933930057860599809
+since_tweet_id = 933930946721648641
 while True:
     since_tweet_id = scan_for_requests(since_tweet_id)
     time.sleep(300)
