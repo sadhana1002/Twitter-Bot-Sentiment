@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-
+# In[ ]:
 
 
 # Dependencies
@@ -16,8 +16,6 @@ import os
 
 import time
 
-print (plt.style.available) 
-
 plt.style.use('fivethirtyeight')
 
 # Import and Initialize Sentiment Analyzer
@@ -31,15 +29,13 @@ access_token = os.getenv("bot_access_token")
 access_token_secret = os.getenv("bot_access_token_secret")
 
 
-
-
-
 # Setup Tweepy API Authentication
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 
+# In[ ]:
 
 
 def parse_requests(tweet, tweet_dict=dict()):
@@ -49,14 +45,14 @@ def parse_requests(tweet, tweet_dict=dict()):
     tweet_requests = []
     print(tweet_id)
     for mentions in tweet["entities"]["user_mentions"]:
-        if mentions["screen_name"] != "PySentiBot":
+        if (mentions["screen_name"] != "PySentimentBot"):
             tweet_requests.append(mentions["screen_name"])
     
     tweet_dict = {"id":tweet_id,"user":tweet_user,"analysis_requests":tweet_requests}
     return tweet_dict
 
 
-
+# In[ ]:
 
 
 def analyze_sentiments(recent_tweets, sentiment_results=list()):
@@ -64,11 +60,12 @@ def analyze_sentiments(recent_tweets, sentiment_results=list()):
     for tweet in recent_tweets:
         new_tweet = cleanse_tweet(tweet)
         sentiment_result = analyzer.polarity_scores(new_tweet["text"])
+        sentiment_result.update({"tweet_id":new_tweet["id"]})
         sentiment_results.append(sentiment_result)    
     return sentiment_results
 
 
-
+# In[ ]:
 
 
 def remove_noise(tweet, category, key, result_tweet=dict()):
@@ -93,7 +90,7 @@ def cleanse_tweet(tweet,result_tweet=dict()):
     return result_tweet
 
 
-
+# In[ ]:
 
 
 def color_map(value):
@@ -113,54 +110,73 @@ def plot_sentiments(title,sentiments):
     
     filename = "SentimentAnalysis_of_"+title+".png"
     plt.savefig(filename)
+    plt.show()
     
     return filename  
 
 
-
+# In[ ]:
 
 
 def scan_for_requests(since_tweet_id):
-    search_handle = "@PySentiBot"
+    
+    total_tweets_so_far = 0
+    
+    last_tweet_id = since_tweet_id
+    
+    search_handle = "@PySentimentBot"
 
-    results = api.search(search_handle,since_id = since_tweet_id)
+    results = api.mentions_timeline(since_tweet_id)
+    
+    print(f"Total results retrieved - {len(results)}")
 
-    if(len(results["statuses"]) > 0):
+    if(len(results) > 0):
+        
         tweet_data = []
+        print(results)
 
-        for tweet in results["statuses"]:
-            tweet_data.append(parse_requests(tweet))
+        for tweet in results:
+            parsed_tweet = parse_requests(tweet)
+            last_tweet_id = tweet['id']
+            print(f"Parsed tweet - {tweet}")
+            tweet_data.append(parsed_tweet)
+        print(f"tweet data - {tweet_data}")
         
         for item in tweet_data:
+            
+            
 
             recent_tweets = []
 
             for analyze_request in item["analysis_requests"]:
 
                 recent_tweets = api.user_timeline(analyze_request,count=200)
-
+                
+                print(f"{analyze_request} - {len(recent_tweets)}")
+                
                 if(len(recent_tweets) > 0):
                     sentiments = analyze_sentiments(recent_tweets)
-                    #print(sentiments)
+                    print(sentiments)
                     sentiment_fig = plot_sentiments(analyze_request,sentiments)
                     text_status = f"{datetime.now()} - Thank you for your tweet @{item['user']}! Here is the sentiment analysis of {analyze_request}!"
                     api.update_with_media(filename=sentiment_fig,status=text_status,in_reply_to_status_id=item["id"])
                 else:
                     text_status = f"{datetime.now()} - Thank you for your tweet @{item['user']}! Sorry, {analyze_request} has no tweets!" 
                     api.update_status(text_status)
-
+                        
+                    total_tweets_so_far = total_tweets_so_far + 1
                 plt.show()
-                time.sleep(500)
-        return results["statuses"][0]["id"]
+        return last_tweet_id
     else:
-        return since_tweet_id
+        return last_tweet_id
 
 
+# In[ ]:
 
 
+since_tweet_id = 937422923572400129
 
-since_tweet_id = 933930946721648641
 while True:
-    since_tweet_id = scan_for_requests(since_tweet_id)
-    time.sleep(300)
+    time.sleep(30)
+    since_tweet_id = scan_for_requests(since_tweet_id)    
 
